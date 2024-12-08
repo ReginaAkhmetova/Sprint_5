@@ -1,30 +1,29 @@
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-from . import constants, locators
-from .routines import authenticate
-
-# Переход из личного кабинета по клику на «Конструктор
-def test_from_lk_to_the_constructor(driver):
-    driver.find_element(*locators.LK_PAGE).click()
-    authenticate(driver)
-
-    WebDriverWait(driver, 3).until(EC.element_to_be_clickable(locators.MN_PERSONAL_ACCOUNT))
-
-    driver.find_element(*locators.MN_PERSONAL_ACCOUNT).click()
-    driver.find_element(*locators.MN_CONSTRUCTOR).click()
-
-    assert WebDriverWait(driver, 3).until(EC.url_to_be(constants.URL_INDEX))
+from . import constants, base
 
 
-# Переход из личного кабинета по клику на логотип Stellar Burgers.
-def test_logo_stellar_burgers(driver):
-    driver.find_element(*locators.LK_PAGE).click()
-    authenticate(driver)
+class TestLkToConstructor(base.StellarBurgersTestcase):
+    # Переход из личного кабинета по клику на «Конструктор
+    def test_from_lk_to_the_constructor(self, driver):
+        driver.find_element(*self.home_page.LK_PAGE).click()
+        self.login(driver)
 
-    WebDriverWait(driver, 3).until(EC.element_to_be_clickable(locators.MN_PERSONAL_ACCOUNT))
+        self.wait_for_clickable(driver, *self.home_page.MN_PERSONAL_ACCOUNT)
 
-    driver.find_element(*locators.MN_PERSONAL_ACCOUNT).click()
-    driver.find_element(*locators.LOGO).click()
+        driver.find_element(*self.home_page.MN_PERSONAL_ACCOUNT).click()
+        self.wait_for(driver, *self.account_page.MN_CONSTRUCTOR)
+        driver.find_element(*self.account_page.MN_CONSTRUCTOR).click()
 
-    assert WebDriverWait(driver, 3).until(EC.url_to_be(constants.URL_INDEX))
+        assert self.wait_for_url(driver, constants.URL_INDEX)
+
+
+    # Переход из личного кабинета по клику на логотип Stellar Burgers.
+    def test_logo_stellar_burgers(self, driver):
+        driver.find_element(*self.home_page.LK_PAGE).click()
+        self.login(driver)
+
+        self.wait_for_clickable(driver, *self.home_page.MN_PERSONAL_ACCOUNT)
+
+        driver.find_element(*self.home_page.MN_PERSONAL_ACCOUNT).click()
+        driver.find_element(*self.LOGO).click()
+
+        assert self.wait_for_url(driver, constants.URL_INDEX)

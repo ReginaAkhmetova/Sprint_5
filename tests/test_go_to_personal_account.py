@@ -1,14 +1,12 @@
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-from . import locators, constants
-from .routines import authenticate
+from . import base, constants
 
 
-# переход в «Личный кабинет»
-def test_go_to_personal_account(driver):
-    driver.find_element(*locators.MN_PERSONAL_ACCOUNT).click()
-    authenticate(driver)
-    WebDriverWait(driver, 3).until(EC.element_to_be_clickable(locators.MN_PERSONAL_ACCOUNT))
-    driver.find_element(*locators.MN_PERSONAL_ACCOUNT).click()
-    assert WebDriverWait(driver, 3).until(EC.url_to_be(constants.URL_PROFILE))
+class TestGotoPersonalAccount(base.StellarBurgersTestcase):
+
+    # переход в «Личный кабинет»
+    def test_go_to_personal_account(self, driver):
+        driver.find_element(*self.home_page.MN_PERSONAL_ACCOUNT).click()
+        self.login(driver)
+        self.wait_for_clickable(driver, *self.home_page.MN_PERSONAL_ACCOUNT)
+        driver.find_element(*self.home_page.MN_PERSONAL_ACCOUNT).click()
+        assert self.wait_for_url(driver, constants.URL_PROFILE)

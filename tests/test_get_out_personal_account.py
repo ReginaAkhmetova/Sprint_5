@@ -1,18 +1,15 @@
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
-from . import constants, locators
-from .routines import authenticate
+from . import constants, base
 
 
-# выход по кнопке «Выйти» в личном кабинете
-def test_get_out_personal_account(driver):
-    driver.get(constants.URL_LOGIN)
-    authenticate(driver)
+class TestGetOutPersonalAccount(base.StellarBurgersTestcase):
+    # выход по кнопке «Выйти» в личном кабинете
+    def test_get_out_personal_account(self, driver):
+        driver.get(constants.URL_LOGIN)
+        self.login(driver)
 
-    WebDriverWait(driver, 3).until(EC.element_to_be_clickable(locators.LK_PAGE))
-    driver.find_element(*locators.LK_PAGE).click()
-    WebDriverWait(driver, 3).until(EC.url_to_be(constants.URL_PROFILE))
-    driver.find_element(*locators.LOG_OUT_BUTTON).click()
+        self.wait_for_clickable(driver, *self.home_page.LK_PAGE)
+        driver.find_element(*self.home_page.LK_PAGE).click()
+        self.wait_for_url(driver, constants.URL_PROFILE)
+        driver.find_element(*self.account_page.LOG_OUT_BUTTON).click()
 
-    assert WebDriverWait(driver, 3).until(EC.url_to_be(constants.URL_LOGIN))
+        assert self.wait_for_url(driver, constants.URL_LOGIN)
